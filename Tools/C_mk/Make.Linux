@@ -1,0 +1,47 @@
+# Make for Linux
+
+#
+# Generic C++ stuff.
+#
+ifeq ($(COMP),xlC)
+  CXX     := mpicxx
+  CXXOPTF += -g -O2 -qmaxmem=-1
+  CXXDEBF += -g 
+endif
+
+#
+# Now Fortran stuff.
+#
+FORT_CPP := cpp -E -traditional-cpp -P
+
+ifeq ($(FCOMP),xlf)
+  CXX := mpicxx
+  CC  := mpicc
+  FC  := mpif90 -qfixed
+  fC  := mpif90 -qfixed
+  F90 := mpif90 
+
+  ifeq ($(USE_OMP),TRUE)
+    F90FLAGS += -qsmp=noauto:omp
+    FFLAGS   += -qsmp=noauto:omp
+    CFLAGS   += -qsmp=noauto:omp
+    CXXOPTF  += -qsmp=noauto:omp
+  endif
+
+  F90FLAGS += -qsuffix=f=f90 -qfree=f90 -qmoddir=$(fmoddir) -I$(fmoddir)
+
+  ifeq ($(PRECISION),FLOAT)
+    FOPTF += -g -O2 -qarch=auto -qtune=auto -qmaxmem=-1
+    FDEBF += -g
+    fOPTF += -g -O2 -qarch=auto -qtune=auto -qmaxmem=-1
+    fDEBF += -g -C
+  else
+    FOPTF += -g -O2 -qdpc -qarch=auto -qtune=auto -qmaxmem=-1
+    FDEBF += -qdpc -g
+    fOPTF += -g -O2 -qdpc -qarch=auto -qtune=auto -qmaxmem=-1
+    fDEBF += -qdpc -g -C
+  endif
+
+  override FORTLINK := LOWERCASE
+  NEEDS_FLUSH_F := TRUE
+endif

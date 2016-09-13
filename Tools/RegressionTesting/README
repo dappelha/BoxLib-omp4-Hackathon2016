@@ -1,0 +1,6 @@
+regtest.py is the main regression testing script for BoxLib plotfiles.
+Typing './regtest.py -h' will give its basic usage.
+
+reg_test_blame.py can help find out which git commit to blame if a
+regression test fails.  It depends on testnew.py.  Typing
+./reg_test_blame.py will show the usage.
